@@ -1,20 +1,20 @@
-Particle p;
+ParticleSystem ps;
 
 void setup() {
   size(640, 360);
-  p = new Particle();
+  ps = new ParticleSystem();
 }
 
 void draw() {
   background(255);
-  p.update();
-  p.display();
+  ps.addParticle();
+  ps.run();
 }
-
 class Particle {
   float locationX, locationY;
   float velocityX, velocityY;
   float accelerationX, accelerationY;
+  float lifespan = 255;
 
   Particle() {
     accelerationX = 0;
@@ -25,16 +25,47 @@ class Particle {
     locationY = 30;
   }
 
-  void update() {
+  void update() { //same as move()
     velocityX += accelerationX;
     velocityY += accelerationY;   
     locationX += velocityX;
     locationY += velocityY;
+    lifespan -= 2;
+  }
+  boolean isDead() {
+    if (lifespan <=0) {
+      return true;
+    } else {
+      return false;
+    }
   }
 
   void display() {
-    stroke(0);
-    fill(127);
+    stroke(0, lifespan);
+    fill(127, lifespan);
     ellipse(locationX, locationY, 8, 8);
+  }
+}
+class ParticleSystem {
+  ArrayList<Particle>particles;
+
+  ParticleSystem() {
+    particles = new ArrayList<Particle>();
+  }
+
+void addParticle(){
+  particles.add(new Particle());
+}
+
+  void run() {
+    for (int i = particles.size() -1; i >= 0; i--) {
+      Particle p = particles.get(i);
+      p.update();
+      p.display();
+
+      if (p.isDead()) {
+        particles.remove(i);
+      }
+    }
   }
 }
